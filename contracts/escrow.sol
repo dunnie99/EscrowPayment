@@ -26,7 +26,12 @@ contract Escrow {
     }
 
     modifier onlyArbiter() {
-        require(msg.sender == arbiter, "Only the arbiter can call this function");
+        require(msg.sender == seller, "Only the seller can call this function");
+        _;
+    }
+
+    modifier onlyArbiterOrBuyer() {
+        require(msg.sender == arbiter || msg.sender == buyer, "Only the arbiter or Buyer can call this function");
         _;
     }
 
@@ -40,13 +45,20 @@ contract Escrow {
         _;
     }
 
+    modifier agreementNotCompleted() {
+        require(!agreementFulfilled, "Agreement has already been fulfilled");
+        _;
+    }
+
     function init(address _seller, address _buyer) public onlyArbiter{
         buyer = _buyer;
         seller = _seller;
     }
 
 
-    
+    function fulfilled() onlyArbiterOrBuyer public {
+        agreementFulfilled = true;
+    }
 
     function releaseFunds() external agreementCompleted escrowNotCompleted {
         require(!fundsDisbursed, "Funds have already been disbursed");
@@ -55,15 +67,13 @@ contract Escrow {
         payable(seller).transfer(amount);
     }
 
-    function refundBuyer() external escrowNotCompleted onlyArbiter {
-        require(!agreementFulfilled, "Agreement already fulfilled");
+    function refundBuyer() external agreementNotCompleted escrowNotCompleted onlyArbiterOrBuyer {
         require(!fundsDisbursed, "Funds have already been disbursed");
-        isCompleted = true;
         fundsDisbursed = true;
         payable(buyer).transfer(amount);
     }
 
-    function arbitrateRefund() external onlyArbiter agreementCompleted escrowNotCompleted  {
+    function arbitrateRefund() external onlyArbiter agreementNotCompleted escrowNotCompleted  {
         require(!fundsDisbursed, "Funds have already been disbursed");
         isCompleted = true;
         fundsDisbursed = true;
