@@ -5,7 +5,8 @@ contract Escrow {
     address public buyer;
     address public seller;
     address public arbiter;
-    uint256 public amount;
+    uint256 public payment;
+    uint256 public balance;
     bool public agreementFulfilled;
     bool public fundsDisbursed;
     bool public isCompleted;
@@ -50,13 +51,14 @@ contract Escrow {
         _;
     }
 
-    function init(address _seller, address _buyer) public onlyArbiter{
+    function init(address _seller, address _buyer, uint256 _payment) public onlyArbiter{
         buyer = _buyer;
         seller = _seller;
+        
     }
 
 
-    function fulfilled() onlyArbiterOrBuyer public {
+    function fulfilled() onlyBuyer public {
         agreementFulfilled = true;
     }
 
@@ -64,27 +66,27 @@ contract Escrow {
         require(!fundsDisbursed, "Funds have already been disbursed");
         fundsDisbursed = true;
         isCompleted = true;
-        payable(seller).transfer(amount);
+        payable(seller).transfer(payment);
     }
 
     function refundBuyer() external agreementNotCompleted escrowNotCompleted onlyArbiterOrBuyer {
         require(!fundsDisbursed, "Funds have already been disbursed");
         fundsDisbursed = true;
-        payable(buyer).transfer(amount);
+        payable(buyer).transfer(payment);
     }
 
     function arbitrateRefund() external onlyArbiter agreementNotCompleted escrowNotCompleted  {
         require(!fundsDisbursed, "Funds have already been disbursed");
         isCompleted = true;
         fundsDisbursed = true;
-        payable(buyer).transfer(amount);
+        payable(buyer).transfer(payment);
     }
 
 
     receive() external payable {
         require(msg.sender == buyer, "Only the buyer can send funds");
         require(msg.value > 0, "Funds must be greater than zero");
-        amount += msg.value;
+        payment += msg.value;
     }
 
 
