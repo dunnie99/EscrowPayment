@@ -89,6 +89,7 @@ contract Escrow {
         payable(arbiter).transfer(bal);
     }
 
+
     receive() external payable {
         require(msg.sender == buyer, "Only the buyer can send funds");
         require(msg.value >= amount, "Funds must be greater than zero");
