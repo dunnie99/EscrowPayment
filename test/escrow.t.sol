@@ -19,6 +19,7 @@ contract CounterTest is Test {
 
 
     function testInit() public {
-
+        vm.prank(Bob);
+        payment.init(Alice, Tj, 20);
     }
 }
