@@ -5,11 +5,11 @@ import "forge-std/Test.sol";
 import "../src/Escrow.sol";
 
 contract CounterTest is Test {
-    Escrow public payment;
+    Escrow public crow;
 
     function setUp() public {
         vm.prank(Bob);
-        payment = new Escrow();
+        crow = new Escrow();
         
     }
 
@@ -20,6 +20,15 @@ contract CounterTest is Test {
 
     function testInit() public {
         vm.prank(Bob);
-        payment.init(Alice, Tj, 20);
+        crow.init(Alice, Tj, 20);
+    }
+
+    function testETHTransfer () public {
+        vm.deal(Tj, 100 ether);
+        vm.startPrank(Tj);
+        crow.contractFund();
+
+
+
     }
 }

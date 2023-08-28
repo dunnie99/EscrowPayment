@@ -6,11 +6,11 @@ contract Escrow {
     address public seller;
     address public arbiter;
     uint256 public payment;
-    uint256 public balance;
     uint256 public amount;
     bool public agreementFulfilled;
     bool public fundsDisbursed;
     bool public isCompleted;
+
     
 
     constructor() {
@@ -59,6 +59,11 @@ contract Escrow {
         
     }
 
+    function contractFund() payable external {
+        require(msg.value >= payment, "Invalid amount");
+
+    }
+
 
     function fulfilled() onlyBuyer public {
         agreementFulfilled = true;
@@ -91,8 +96,6 @@ contract Escrow {
 
 
     receive() external payable {
-        require(msg.sender == buyer, "Only the buyer can send funds");
-        require(msg.value >= amount, "Funds must be greater than zero");
         amount += msg.value;
     }
 
