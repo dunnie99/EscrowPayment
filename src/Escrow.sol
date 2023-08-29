@@ -43,7 +43,7 @@ contract Escrow {
     }
 
     modifier agreementCompleted() {
-        require(agreementFulfilled, "Agreement has already been fulfilled");
+        require(agreementFulfilled, "Agreement has not been fulfilled");
         _;
     }
 
@@ -61,12 +61,8 @@ contract Escrow {
 
     function contractFund() payable external {
         require(msg.value >= payment, "Invalid amount");
-
-    }
-
-
-    function fulfilled() onlyBuyer public {
         agreementFulfilled = true;
+
     }
 
     function releaseFunds() external agreementCompleted escrowNotCompleted {

@@ -33,6 +33,8 @@ contract CounterTest is Test {
     }
 
     function testReleaseFund () public {
+        testETHTransfer();
+        crow.releaseFunds();
 
     }
 }
