@@ -20,15 +20,19 @@ contract CounterTest is Test {
 
     function testInit() public {
         vm.prank(Bob);
-        crow.init(Alice, Tj, 20);
+        crow.init(Alice, Tj, 20 ether);
+
     }
 
     function testETHTransfer () public {
+        testInit();
         vm.deal(Tj, 100 ether);
-        vm.startPrank(Tj);
-        crow.contractFund();
+        vm.prank(Tj);
+        crow.contractFund{value: 20 ether}();
 
+    }
 
+    function testReleaseFund () public {
 
     }
 }
